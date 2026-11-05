@@ -1,0 +1,49 @@
+services:
+  frontend:
+    container_name: frontend-demo
+    image: frontend-demo
+    build:
+      context: ./frontend
+    ports:
+      - "5172:5172"
+    depends_on:
+      - api
+
+  api:
+    container_name: api-demo
+    image: api-demo
+    build:
+      context: ./api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      SPRING_PROFILES_ACTIVE: demo
+      APP_DB_HOST: db
+      APP_DB_PORT: 5432
+      APP_DB_NAME: ${APP_DB_NAME}
+      APP_DB_USER: ${APP_DB_USER}
+      APP_DB_PASS: ${APP_DB_PASS}
+      JWT_SECRET: ${JWT_SECRET}
+
+  db:
+    image: postgres:latest
+    container_name: db-demo
+    environment:
+      POSTGRES_DB: ${APP_DB_NAME}
+      POSTGRES_USER: ${APP_DB_USER}
+      POSTGRES_PASSWORD: ${APP_DB_PASS}
+    ports:
+      - "5433:5432"
+
+  reverse-proxy:
+    container_name: reverse-proxy-demo
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - api
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro

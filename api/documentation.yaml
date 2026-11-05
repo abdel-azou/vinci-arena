@@ -1,0 +1,118 @@
+openapi: 3.1.0
+info:
+  title: Vinci Arena CAE API
+  description: |
+    API pour **Vinci Arena** - Gestion des joueurs et tournois.
+    
+    ## Authentification JWT
+    - `/auths/register` → Crée joueur + token 24h
+    - `/auths/login` → Connexion + token 24h
+    - **Bearer token** pour endpoints protégés
+    
+    ## Modèle de données
+    - **Member** : email, tag (unique), specialty (TACTICIAN...)
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:3000'
+    description: Development
+
+paths:
+  /auths/register:
+    post:
+      summary: Inscription joueur
+      description: Crée un nouveau joueur avec tag unique + specialty
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Joueur créé + token JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticatedMember'
+        '400':
+          description: Données invalides
+        '409':
+          description: Email ou tag déjà utilisé
+
+  /auths/login:
+    post:
+      summary: Connexion joueur
+      description: Authentifie par email/mot de passe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Token JWT 24h
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticatedMember'
+        '400':
+          description: Données invalides
+        '401':
+          description: Identifiants incorrects
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [email, tag, password, specialty]
+      properties:
+        email:
+          type: string
+          format: email
+          example: player@vinci.be
+        tag:
+          type: string
+          example: ProPlayer42
+          description: Identifiant unique (court)
+        password:
+          type: string
+          writeOnly: true
+          example: pass123
+        specialty:
+          $ref: '#/components/schemas/Specialty'
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: player@vinci.be
+        password:
+          type: string
+          writeOnly: true
+          example: pass123
+
+    AuthenticatedMember:
+      type: object
+      properties:
+        tag:
+          type: string
+          example: ProPlayer42
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        specialty:
+          $ref: '#/components/schemas/Specialty'
+
+    Specialty:
+      type: string
+      enum: [TACTICIAN, STRATEGIST, FIGHTER, HEALER]
+      description: Rôle du joueur dans l'arène

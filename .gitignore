@@ -1,0 +1,18 @@
+### Mac
+.DS_Store
+### Windows
+Thumbs.db
+### Linux
+lost+found
+.env
+*.env.idea/
+
+# Claude Code configuration
+.claude/
+
+# IntelliJ / JetBrains
+.idea/
+*.iml
+
+# Frontend coverage
+frontend/coverage/

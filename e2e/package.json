@@ -1,0 +1,22 @@
+{
+  "name": "e2e",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install:browsers": "playwright install",
+    "test": "playwright test",
+    "test:chromium": "playwright test --project=chromium",
+    "test:safari": "playwright test --project=safari",
+    "test:ui": "playwright test --ui"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.5.0"
+  }
+}
